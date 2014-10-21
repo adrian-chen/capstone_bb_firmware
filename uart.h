@@ -16,11 +16,11 @@
 
 #include <msp430g2553.h>
 //TODO Maybe use <msp430.h>
-
+int baud = UART_BAUD_9600;
 // init_uart: Initialize everything necessary for the UART functionality you are implementing.  Be sure not to affect pins other than the TX and RX pins (output values, directions, or select registers).  You must support a baud rate of 9600 (UART_BAUD_9600) and 115200 (UART_BAUD_115200).  The other baud rates are optional.
-void init_uart(char baud){
+void init_uart(int baud){
 	//TODO Adrian: I have no clue which of this stuff is right, I'm just putting potentially relevant stuff in here.
-	if(/* TODO something here */ == 0){
+	if(baud == 0){
 		// INIT for 9600 baud
 		WDTCTL = WDTPW + WDTHOLD;                 // Stop Watchdog Timer
 		P1DIR = 0xFF;                             // All P1.x outputs
@@ -39,7 +39,7 @@ void init_uart(char baud){
 		IE2 |= UCA0RXIE;                          // Enable USCI_A0 RX interrupt
 		__bis_SR_register(LPM3_bits + GIE);       // Enter LPM3, interrupts enabled
 	}
-	else if(/* TODO something here */ == 4){
+	else if(baud == 4){
 		// INIT for 115200 baud
 		WDTCTL = WDTPW + WDTHOLD;                 // Stop WDT
 		if (CALBC1_1MHZ==0xFF)                                        // If calibration constant erased
@@ -85,13 +85,13 @@ void put_str(unsigned char* c){
 //   If no character has been received and block is set to one, wait for a character to be received and then return that character.
 // Thus, if the microcontroller receives 'a' one time, and this function is called twice with block = 0, the first call should return 'a' and the second should return -1.  If the microcontroller receives 'a' one time, and this function is called twice with block = 1, the first call should return 'a' and the second should wait indefinitely until a character is received, and then return that character.
 int uart_rx(char block){
-	if(UCA0TXBUF!=NULL) 		//TODO might have to access the first index: UCA0TXBUF[0]
-		return UCA0TXBUF;	// Same here
-	if(block == 0)
+	if(UCA0TXBUF[0]!=NULL) 	
+		return UCA0TXBUF[0];
+	else if(block == 0)
 		return -1;
 	else if(block == 1){
-		while(UCA0TXBUF==NULL); //TODO might have to access the first index: UCA0TXBUF[0]
-		return UCA0TXBUF;	// Same here
+		while(UCA0TXBUF[0]==NULL);
+		return UCA0TXBUF[0];
 	}
 }
 #endif
